@@ -112,52 +112,52 @@ function getStatusBadge(status: string) {
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-3 max-w-[1400px]">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">Real-time overview of your transport operations</p>
+        <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
+        <p className="text-sm text-muted-foreground">Real-time overview of your transport operations</p>
       </div>
 
       {/* Financial MTD Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-3 md:grid-cols-3">
         <Card className="border-l-4 border-l-blue-500">
-          <CardContent className="p-5">
+          <CardContent className="p-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">MTD Billing Value</p>
-                <p className="text-2xl font-bold mt-1">₹32.8L</p>
-                <p className="text-xs text-green-600 mt-1">+14% vs last month</p>
+                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">MTD Billing Value</p>
+                <p className="text-lg font-bold">₹32.8L</p>
+                <p className="text-[10px] text-green-600">+14% vs last month</p>
               </div>
-              <div className="h-11 w-11 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                <IndianRupee className="h-5 w-5 text-blue-600" />
+              <div className="h-9 w-9 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                <IndianRupee className="h-4 w-4 text-blue-600" />
               </div>
             </div>
           </CardContent>
         </Card>
         <Card className="border-l-4 border-l-orange-500">
-          <CardContent className="p-5">
+          <CardContent className="p-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">MTD Expenses</p>
-                <p className="text-2xl font-bold mt-1">₹18.4L</p>
-                <p className="text-xs text-red-600 mt-1">+6% vs last month</p>
+                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">MTD Expenses</p>
+                <p className="text-lg font-bold">₹18.4L</p>
+                <p className="text-[10px] text-red-600">+6% vs last month</p>
               </div>
-              <div className="h-11 w-11 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
-                <Receipt className="h-5 w-5 text-orange-600" />
+              <div className="h-9 w-9 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                <Receipt className="h-4 w-4 text-orange-600" />
               </div>
             </div>
           </CardContent>
         </Card>
         <Card className="border-l-4 border-l-green-500">
-          <CardContent className="p-5">
+          <CardContent className="p-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">MTD Net Profit</p>
-                <p className="text-2xl font-bold mt-1">₹14.4L</p>
-                <p className="text-xs text-green-600 mt-1">+22% vs last month</p>
+                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">MTD Net Profit</p>
+                <p className="text-lg font-bold">₹14.4L</p>
+                <p className="text-[10px] text-green-600">+22% vs last month</p>
               </div>
-              <div className="h-11 w-11 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                <PiggyBank className="h-5 w-5 text-green-600" />
+              <div className="h-9 w-9 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                <PiggyBank className="h-4 w-4 text-green-600" />
               </div>
             </div>
           </CardContent>
@@ -165,18 +165,17 @@ export default function DashboardPage() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 md:grid-cols-4 lg:grid-cols-8">
         {stats.map((stat) => (
           <Card key={stat.name} className="hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">{stat.name}</p>
-                  <p className="text-2xl font-bold mt-1">{stat.value}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{stat.change} from yesterday</p>
+            <CardContent className="p-3">
+              <div className="flex items-center gap-2">
+                <div className={`h-8 w-8 rounded-md ${stat.bg} flex items-center justify-center shrink-0`}>
+                  <stat.icon className={`h-4 w-4 ${stat.color}`} />
                 </div>
-                <div className={`h-12 w-12 rounded-lg ${stat.bg} flex items-center justify-center`}>
-                  <stat.icon className={`h-6 w-6 ${stat.color}`} />
+                <div className="min-w-0">
+                  <p className="text-[10px] text-muted-foreground truncate">{stat.name}</p>
+                  <p className="text-sm font-bold leading-tight">{stat.value}</p>
                 </div>
               </div>
             </CardContent>
@@ -184,32 +183,32 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-3 lg:grid-cols-3">
         {/* Recent Trips */}
         <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-lg">Recent Trips</CardTitle>
+          <CardHeader className="py-3 px-4">
+            <CardTitle className="text-sm">Recent Trips</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 pb-3 pt-0">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-xs">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left py-3 px-2 font-medium text-muted-foreground">Trip ID</th>
-                    <th className="text-left py-3 px-2 font-medium text-muted-foreground">Client</th>
-                    <th className="text-left py-3 px-2 font-medium text-muted-foreground">Route</th>
-                    <th className="text-left py-3 px-2 font-medium text-muted-foreground">Status</th>
-                    <th className="text-left py-3 px-2 font-medium text-muted-foreground">ETA</th>
+                    <th className="text-left py-2 px-2 font-medium text-muted-foreground">Trip ID</th>
+                    <th className="text-left py-2 px-2 font-medium text-muted-foreground">Client</th>
+                    <th className="text-left py-2 px-2 font-medium text-muted-foreground">Route</th>
+                    <th className="text-left py-2 px-2 font-medium text-muted-foreground">Status</th>
+                    <th className="text-left py-2 px-2 font-medium text-muted-foreground">ETA</th>
                   </tr>
                 </thead>
                 <tbody>
                   {recentTrips.map((trip) => (
                     <tr key={trip.id} className="border-b last:border-0 hover:bg-muted/50 transition-colors">
-                      <td className="py-3 px-2 font-mono text-xs">{trip.id}</td>
-                      <td className="py-3 px-2">{trip.client}</td>
-                      <td className="py-3 px-2 text-muted-foreground">{trip.pickup} → {trip.drop}</td>
-                      <td className="py-3 px-2">{getStatusBadge(trip.status)}</td>
-                      <td className="py-3 px-2">{trip.eta}</td>
+                      <td className="py-2 px-2 font-mono text-[10px]">{trip.id}</td>
+                      <td className="py-2 px-2">{trip.client}</td>
+                      <td className="py-2 px-2 text-muted-foreground">{trip.pickup} → {trip.drop}</td>
+                      <td className="py-2 px-2">{getStatusBadge(trip.status)}</td>
+                      <td className="py-2 px-2">{trip.eta}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -220,20 +219,20 @@ export default function DashboardPage() {
 
         {/* Alerts Panel */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Alerts</CardTitle>
+          <CardHeader className="py-3 px-4">
+            <CardTitle className="text-sm">Alerts</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
+          <CardContent className="px-4 pb-3 pt-0">
+            <div className="space-y-2.5">
               {alerts.map((alert, i) => (
-                <div key={i} className="flex gap-3 items-start">
-                  <div className={`mt-0.5 h-2 w-2 rounded-full shrink-0 ${
+                <div key={i} className="flex gap-2 items-start">
+                  <div className={`mt-1 h-1.5 w-1.5 rounded-full shrink-0 ${
                     alert.type === "critical" ? "bg-red-500" :
                     alert.type === "warning" ? "bg-yellow-500" : "bg-blue-500"
                   }`} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm leading-tight">{alert.message}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{alert.time}</p>
+                    <p className="text-xs leading-tight">{alert.message}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">{alert.time}</p>
                   </div>
                 </div>
               ))}

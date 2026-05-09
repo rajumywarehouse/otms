@@ -46,13 +46,13 @@ export default function ReportsPage() {
   const [selectedPeriod, setSelectedPeriod] = useState("this-month");
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3 max-w-[1400px]">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Reports & Analytics</h1>
-          <p className="text-muted-foreground">Business intelligence and operational insights</p>
+          <h1 className="text-2xl font-bold tracking-tight">Reports & Analytics</h1>
+          <p className="text-sm text-muted-foreground">Business intelligence and operational insights</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-1.5">
           {[
             { id: "this-week", label: "This Week" },
             { id: "this-month", label: "This Month" },
@@ -62,6 +62,7 @@ export default function ReportsPage() {
               key={period.id}
               variant={selectedPeriod === period.id ? "default" : "outline"}
               size="sm"
+              className="h-7 text-xs"
               onClick={() => setSelectedPeriod(period.id)}
             >
               {period.label}
@@ -71,13 +72,13 @@ export default function ReportsPage() {
       </div>
 
       {/* KPI Overview */}
-      <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
+      <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-6">
         {kpis.map((kpi) => (
           <Card key={kpi.label}>
-            <CardContent className="p-4">
-              <p className="text-xs text-muted-foreground">{kpi.label}</p>
-              <p className="text-xl font-bold mt-1">{kpi.value}</p>
-              <p className={`text-xs mt-1 ${kpi.positive ? "text-green-600" : "text-red-600"}`}>
+            <CardContent className="p-3">
+              <p className="text-[10px] text-muted-foreground">{kpi.label}</p>
+              <p className="text-lg font-bold">{kpi.value}</p>
+              <p className={`text-[10px] ${kpi.positive ? "text-green-600" : "text-red-600"}`}>
                 {kpi.change}
               </p>
             </CardContent>
@@ -86,31 +87,29 @@ export default function ReportsPage() {
       </div>
 
       {/* Charts Placeholder */}
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-3 md:grid-cols-2">
         <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Trip Volume Trend</CardTitle>
+          <CardHeader className="py-2 px-4">
+            <CardTitle className="text-sm">Trip Volume Trend</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="h-[200px] bg-muted rounded-lg flex items-center justify-center">
+          <CardContent className="px-4 pb-3 pt-0">
+            <div className="h-[140px] bg-muted rounded-lg flex items-center justify-center">
               <div className="text-center">
-                <BarChart3 className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">Chart visualization</p>
-                <p className="text-xs text-muted-foreground mt-1">Integrate Recharts or Chart.js</p>
+                <BarChart3 className="h-8 w-8 text-muted-foreground mx-auto mb-1" />
+                <p className="text-xs text-muted-foreground">Chart visualization</p>
               </div>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Revenue by Client</CardTitle>
+          <CardHeader className="py-2 px-4">
+            <CardTitle className="text-sm">Revenue by Client</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="h-[200px] bg-muted rounded-lg flex items-center justify-center">
+          <CardContent className="px-4 pb-3 pt-0">
+            <div className="h-[140px] bg-muted rounded-lg flex items-center justify-center">
               <div className="text-center">
-                <PieChart className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">Pie chart visualization</p>
-                <p className="text-xs text-muted-foreground mt-1">Integrate Recharts or Chart.js</p>
+                <PieChart className="h-8 w-8 text-muted-foreground mx-auto mb-1" />
+                <p className="text-xs text-muted-foreground">Pie chart visualization</p>
               </div>
             </div>
           </CardContent>
@@ -119,27 +118,27 @@ export default function ReportsPage() {
 
       {/* Available Reports */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Generate Report</CardTitle>
+        <CardHeader className="py-2 px-4">
+          <CardTitle className="text-sm">Generate Report</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <CardContent className="px-4 pb-3 pt-0">
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
             {reportTypes.map((report) => {
               const Icon = report.icon;
               return (
-                <div key={report.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Icon className="h-4 w-4 text-primary" />
+                <div key={report.id} className="border rounded-lg p-3 hover:shadow-md transition-shadow cursor-pointer">
+                  <div className="flex items-center gap-2">
+                    <div className="h-7 w-7 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
+                      <Icon className="h-3.5 w-3.5 text-primary" />
                     </div>
-                    <div>
-                      <p className="font-medium text-sm">{report.name}</p>
-                      <Badge variant="secondary" className="text-xs">{report.frequency}</Badge>
+                    <div className="min-w-0">
+                      <p className="font-medium text-xs truncate">{report.name}</p>
+                      <Badge variant="secondary" className="text-[10px] h-4">{report.frequency}</Badge>
                     </div>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">{report.description}</p>
-                  <Button variant="outline" size="sm" className="mt-3 w-full">
-                    <Download className="h-3 w-3 mr-2" />Generate
+                  <p className="text-[10px] text-muted-foreground mt-1.5 line-clamp-2">{report.description}</p>
+                  <Button variant="outline" size="sm" className="mt-2 w-full h-7 text-xs">
+                    <Download className="h-3 w-3 mr-1.5" />Generate
                   </Button>
                 </div>
               );
@@ -150,26 +149,26 @@ export default function ReportsPage() {
 
       {/* Recent Reports */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Recent Reports</CardTitle>
+        <CardHeader className="py-2 px-4">
+          <CardTitle className="text-sm">Recent Reports</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
+        <CardContent className="px-4 pb-3 pt-0">
+          <div className="space-y-1.5">
             {recentReports.map((report) => (
-              <div key={report.id} className="flex items-center gap-4 p-3 border rounded-lg hover:bg-muted/30 transition-colors">
-                <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center shrink-0">
-                  <FileText className="h-4 w-4 text-muted-foreground" />
+              <div key={report.id} className="flex items-center gap-3 p-2 border rounded-md hover:bg-muted/30 transition-colors">
+                <div className="h-7 w-7 rounded-md bg-muted flex items-center justify-center shrink-0">
+                  <FileText className="h-3.5 w-3.5 text-muted-foreground" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm truncate">{report.name}</p>
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
-                    <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{report.generatedAt}</span>
+                  <p className="font-medium text-xs truncate">{report.name}</p>
+                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                    <span className="flex items-center gap-0.5"><Calendar className="h-2.5 w-2.5" />{report.generatedAt}</span>
                     <span>{report.size}</span>
                   </div>
                 </div>
-                <Badge variant="secondary">{report.format}</Badge>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <Download className="h-4 w-4" />
+                <Badge variant="secondary" className="text-[10px] h-5">{report.format}</Badge>
+                <Button variant="ghost" size="icon" className="h-7 w-7">
+                  <Download className="h-3.5 w-3.5" />
                 </Button>
               </div>
             ))}
