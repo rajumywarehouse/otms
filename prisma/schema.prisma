@@ -1,0 +1,434 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── USER & AUTH ─────────────────────────────────────────────────────────────
+
+enum UserRole {
+  SUPER_ADMIN
+  TRANSPORTER_ADMIN
+  DISPATCHER
+  DRIVER
+  CLIENT
+  ACCOUNTS
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  phone         String?   @unique
+  password      String
+  name          String
+  role          UserRole
+  avatar        String?
+  isActive      Boolean   @default(true)
+  lastLogin     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+
+  driver        Driver?
+  auditLogs     AuditLog[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model Organization {
+  id          String   @id @default(cuid())
+  name        String
+  code        String   @unique
+  address     String?
+  phone       String?
+  email       String?
+  gstNumber   String?
+  logo        String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       User[]
+  clients     Client[]
+  trucks      Truck[]
+  drivers     Driver[]
+  trips       Trip[]
+
+  @@map("organizations")
+}
+
+// ─── MASTER DATA ─────────────────────────────────────────────────────────────
+
+model Client {
+  id            String   @id @default(cuid())
+  name          String
+  address       String?
+  city          String?
+  state         String?
+  pincode       String?
+  contactName   String?
+  contactPhone  String?
+  contactEmail  String?
+  gstNumber     String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  trips         Trip[]
+
+  @@map("clients")
+}
+
+model TruckType {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  trucks      Truck[]
+
+  @@map("truck_types")
+}
+
+model LoadType {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  trips       Trip[]
+
+  @@map("load_types")
+}
+
+model UnitType {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@map("unit_types")
+}
+
+model ExpenseType {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  expenses    Expense[]
+
+  @@map("expense_types")
+}
+
+// ─── TRUCK ───────────────────────────────────────────────────────────────────
+
+enum TruckStatus {
+  AVAILABLE
+  ON_TRIP
+  MAINTENANCE
+  INACTIVE
+}
+
+enum OwnershipType {
+  OWNED
+  LEASED
+  ATTACHED
+}
+
+model Truck {
+  id              String        @id @default(cuid())
+  truckNumber     String        @unique
+  truckTypeId     String
+  truckType       TruckType     @relation(fields: [truckTypeId], references: [id])
+  capacity        Float?
+  ownershipType   OwnershipType @default(OWNED)
+  status          TruckStatus   @default(AVAILABLE)
+  currentLat      Float?
+  currentLng      Float?
+  lastLocationAt  DateTime?
+  fitnessExpiry   DateTime?
+  insuranceExpiry DateTime?
+  rcNumber        String?
+  gpsDeviceId     String?
+  isActive        Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  organizationId  String
+  organization    Organization  @relation(fields: [organizationId], references: [id])
+
+  driver          Driver?       @relation("AssignedTruck")
+  trips           Trip[]
+  locationHistory LocationHistory[]
+
+  @@map("trucks")
+}
+
+// ─── DRIVER ──────────────────────────────────────────────────────────────────
+
+enum DriverStatus {
+  AVAILABLE
+  ON_TRIP
+  OFF_DUTY
+  INACTIVE
+}
+
+model Driver {
+  id              String       @id @default(cuid())
+  name            String
+  phone           String       @unique
+  licenseNumber   String?
+  licenseExpiry   DateTime?
+  aadhaarNumber   String?
+  panNumber       String?
+  status          DriverStatus @default(AVAILABLE)
+  emergencyContact String?
+  emergencyPhone  String?
+  isActive        Boolean      @default(true)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  userId          String?      @unique
+  user            User?        @relation(fields: [userId], references: [id])
+
+  organizationId  String
+  organization    Organization @relation(fields: [organizationId], references: [id])
+
+  assignedTruckId String?      @unique
+  assignedTruck   Truck?       @relation("AssignedTruck", fields: [assignedTruckId], references: [id])
+
+  trips           Trip[]
+
+  @@map("drivers")
+}
+
+// ─── TRIP ────────────────────────────────────────────────────────────────────
+
+enum TripStatus {
+  CREATED
+  ASSIGNED
+  DRIVER_ACCEPTED
+  DRIVER_REJECTED
+  ENROUTE_PICKUP
+  REACHED_PICKUP
+  TRIP_STARTED
+  IN_TRANSIT
+  NEAR_DESTINATION
+  REACHED_DESTINATION
+  COMPLETED
+  CANCELLED
+  DELAYED
+}
+
+model Trip {
+  id              String     @id @default(cuid())
+  tripNumber      String     @unique
+  status          TripStatus @default(CREATED)
+
+  // Client Info
+  clientId        String
+  client          Client     @relation(fields: [clientId], references: [id])
+
+  // Pickup
+  pickupAddress   String
+  pickupCity      String?
+  pickupLat       Float?
+  pickupLng       Float?
+  pickupRadius    Int?       @default(500)
+  pickupContact   String?
+  pickupPhone     String?
+  pickupEmail     String?
+
+  // Delivery
+  dropAddress     String
+  dropCity        String?
+  dropLandmark    String?
+  dropLat         Float?
+  dropLng         Float?
+  dropRadius      Int?       @default(500)
+  deliveryContact String?
+  deliveryPhone   String?
+
+  // Shipment
+  loadTypeId      String?
+  loadType        LoadType?  @relation(fields: [loadTypeId], references: [id])
+  tripCost        Float?
+  volume          Float?
+  weight          Float?
+  weightUnit      String?    @default("Tons")
+  units           Int?
+  unitType        String?
+  notes           String?
+
+  // Assignment
+  truckId         String?
+  truck           Truck?     @relation(fields: [truckId], references: [id])
+  driverId        String?
+  driver          Driver?    @relation(fields: [driverId], references: [id])
+
+  // Timeline
+  assignedAt      DateTime?
+  acceptedAt      DateTime?
+  pickupArrivalAt DateTime?
+  tripStartedAt   DateTime?
+  completedAt     DateTime?
+  cancelledAt     DateTime?
+
+  // ETA & Tracking
+  estimatedDistance Float?
+  estimatedDuration Int?
+  currentEta       DateTime?
+
+  organizationId  String
+  organization    Organization @relation(fields: [organizationId], references: [id])
+
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  expenses        Expense[]
+  documents       Document[]
+  trackingEvents  TrackingEvent[]
+
+  @@map("trips")
+}
+
+// ─── EXPENSE ─────────────────────────────────────────────────────────────────
+
+enum ExpenseStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Expense {
+  id            String        @id @default(cuid())
+  tripId        String
+  trip          Trip          @relation(fields: [tripId], references: [id])
+  expenseTypeId String
+  expenseType   ExpenseType   @relation(fields: [expenseTypeId], references: [id])
+  amount        Float
+  remarks       String?
+  receiptUrl    String?
+  status        ExpenseStatus @default(PENDING)
+  date          DateTime      @default(now())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("expenses")
+}
+
+// ─── DOCUMENTS ───────────────────────────────────────────────────────────────
+
+enum DocumentType {
+  INVOICE
+  EWAY_BILL
+  LR_COPY
+  POD
+  VEHICLE_PHOTO
+  OTHER
+}
+
+model Document {
+  id          String       @id @default(cuid())
+  tripId      String
+  trip        Trip         @relation(fields: [tripId], references: [id])
+  type        DocumentType
+  name        String?
+  url         String
+  mimeType    String?
+  size        Int?
+  createdAt   DateTime     @default(now())
+
+  @@map("documents")
+}
+
+// ─── TRACKING ────────────────────────────────────────────────────────────────
+
+model LocationHistory {
+  id        String   @id @default(cuid())
+  truckId   String
+  truck     Truck    @relation(fields: [truckId], references: [id])
+  lat       Float
+  lng       Float
+  speed     Float?
+  heading   Float?
+  timestamp DateTime @default(now())
+
+  @@index([truckId, timestamp])
+  @@map("location_history")
+}
+
+model TrackingEvent {
+  id        String     @id @default(cuid())
+  tripId    String
+  trip      Trip       @relation(fields: [tripId], references: [id])
+  status    TripStatus
+  lat       Float?
+  lng       Float?
+  message   String?
+  timestamp DateTime   @default(now())
+
+  @@index([tripId, timestamp])
+  @@map("tracking_events")
+}
+
+// ─── NOTIFICATIONS ───────────────────────────────────────────────────────────
+
+enum NotificationType {
+  TRIP_ASSIGNED
+  TRIP_ACCEPTED
+  TRIP_STARTED
+  TRIP_COMPLETED
+  TRIP_DELAYED
+  EXPENSE_PENDING
+  GPS_OFFLINE
+  TRUCK_IDLE
+  GEOFENCE_ALERT
+  SYSTEM
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id])
+  type      NotificationType
+  title     String
+  message   String
+  data      Json?
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+
+// ─── AUDIT LOG ───────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String
+  entity    String
+  entityId  String?
+  details   Json?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@map("audit_logs")
+}
